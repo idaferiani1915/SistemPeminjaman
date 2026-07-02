@@ -1,7 +1,7 @@
 <?php
 // config/database.php — satu-satunya sumber koneksi
 
-$dsn = "mysql:host=localhost;dbname=db_peminjaman_aset;charset=utf8mb4";
+$dsn = "mysql:host=127.0.0.1;dbname=db_peminjaman_aset;charset=utf8mb4";
 $db_user = 'root';
 $db_pass = '';
 

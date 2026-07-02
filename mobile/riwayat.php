@@ -92,9 +92,6 @@ try {
         <!-- Mobile Header -->
         <header class="mobile-header">
             <div class="mobile-logo">Riwayat Peminjaman</div>
-            <div class="user-initials" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-                <?= strtoupper(substr($_SESSION['nama'], 0, 2)) ?>
-            </div>
         </header>
 
         <div style="padding: 20px;">
