@@ -1,0 +1,27 @@
+# ================================
+# Sistem Peminjaman Fasilitas
+# .gitignore
+# ================================
+
+# Folder konfigurasi agen AI
+.agent/
+
+# Uploads (file yang diupload user, jangan di-commit)
+uploads/
+
+# Environment / konfigurasi lokal
+.env
+*.env.local
+
+# XAMPP / server logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
