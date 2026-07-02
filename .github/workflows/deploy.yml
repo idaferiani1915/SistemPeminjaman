@@ -24,9 +24,8 @@ jobs:
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        # Mendaftarkan IP Tailscale server agar tidak tertahan prompt signature (yes/no)
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -H 100.79.215.75 >> ~/.ssh/known_hosts
 
     # 4. Masuk ke Server via SSH dan eksekusi Git Pull
