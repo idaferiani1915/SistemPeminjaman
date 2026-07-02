@@ -3,7 +3,7 @@
 
 $dsn = "mysql:host=127.0.0.1;dbname=db_peminjaman_aset;charset=utf8mb4";
 $db_user = 'root';
-$db_pass = '';
+$db_pass = 'bagusdev123';
 
 try {
     $pdo = new PDO($dsn, $db_user, $db_pass, [
