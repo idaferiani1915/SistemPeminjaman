@@ -3,46 +3,30 @@ name: Deploy to Tailscale Server
 on:
   push:
     branches:
-      - main # Workflow akan berjalan otomatis setiap kamu push ke branch main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout repository code ke runner GitHub Actions
+    # 1. Checkout repository code
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Hubungkan Runner GitHub Actions ke Jaringan VPN Tailscale
+    # 2. Hubungkan Runner GitHub ke Jaringan VPN Tailscale
     - name: Connect to Tailscale
       uses: tailscale/github-action@v2
       with:
         authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
-    # 3. Setup SSH Private Key di Runner (Diperketat agar menggunakan ed25519)
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
-        
-        # MEMAKSA SSH menggunakan file id_ed25519 sebagai identitas utama
-        echo -e "Host *\n  IdentityFile ~/.ssh/id_ed25519\n  IdentitiesOnly yes" > ~/.ssh/config
-        chmod 600 ~/.ssh/config
-        
-        # Mendaftarkan IP Tailscale server agar tidak tertahan prompt signature (yes/no)
-        ssh-keyscan -H 100.79.215.75 >> ~/.ssh/known_hosts
-
-    # 4. Masuk ke Server via SSH dengan flag -i (Explicit Identity)
-    - name: Execute Remote SSH Commands
-      run: |
-        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@100.79.215.75 << 'EOF'
-          # Masuk ke folder repository project di server kamu
+    # 3 & 4. Setup SSH otomatis dan Eksekusi Perintah menggunakan Action Resmi
+    - name: Executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 100.79.215.75
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
           cd /var/www/SistemPeminjaman
-          
-          # Ambil update codingan terbaru dari GitHub
           git pull origin main
-          
-          # Jika aplikasi menggunakan dependensi tertentu, silakan tambahkan di sini
-        EOF
