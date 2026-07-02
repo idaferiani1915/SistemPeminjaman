@@ -18,6 +18,7 @@ jobs:
       with:
         authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
+    # 3 & 4. Setup SSH otomatis dan Eksekusi Perintah menggunakan Action Resmi
     - name: Executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -26,5 +27,9 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
           cd /var/www/SistemPeminjaman
+          
+          # 1. Hapus/reset paksa semua perubahan lokal yang ada di server
+          git reset --hard origin/main
+          
+          # 2. Tarik kode terbaru dari GitHub
           git pull origin main
-          # Karena PHP tidak perlu di-restart setelah git pull, proses selesai!
