@@ -174,7 +174,7 @@ try {
                         <tr>
                             <th>Foto</th>
                             <th>Kode QR</th>
-                            <th>Nama Alat</th>
+                            <th>Nama Aset</th>
                             <th>Kategori</th>
                             <th>Kondisi</th>
                             <th>Status</th>
