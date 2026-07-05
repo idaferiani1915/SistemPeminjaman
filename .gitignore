@@ -7,7 +7,6 @@
 .agent/
 
 # Uploads (file yang diupload user, jangan di-commit)
-uploads/
 
 # Environment / konfigurasi lokal
 .env
