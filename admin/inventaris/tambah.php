@@ -39,30 +39,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $allowed_extensions = ['jpg', 'jpeg', 'png'];
                     $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-                    // S-04 & §5.4: Validasi MIME type menggunakan finfo
-                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                    $mime = finfo_file($finfo, $file['tmp_name']);
-                    finfo_close($finfo);
+                    switch ($file['error']) {
+                        case UPLOAD_ERR_OK:
+                            break;
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $error_message = 'Ukuran file terlalu besar. Maksimal adalah 2MB.';
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            $error_message = 'File hanya terupload sebagian. Silakan coba lagi.';
+                            break;
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            $error_message = 'Folder sementara upload tidak tersedia di server.';
+                            break;
+                        case UPLOAD_ERR_CANT_WRITE:
+                            $error_message = 'Server gagal menulis file sementara.';
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            $error_message = 'Upload dibatalkan oleh ekstensi PHP.';
+                            break;
+                        default:
+                            $error_message = 'Terjadi kesalahan saat mengunggah file. Silakan coba lagi.';
+                            break;
+                    }
 
-                    $allowed_mimes = ['image/jpeg', 'image/png', 'image/pjpeg', 'image/x-png'];
+                    if (empty($error_message)) {
+                        if (!is_uploaded_file($file['tmp_name'])) {
+                            $error_message = 'File upload tidak valid.';
+                        } else {
+                            // S-04 & §5.4: Validasi MIME type menggunakan finfo
+                            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                            $mime = finfo_file($finfo, $file['tmp_name']);
+                            finfo_close($finfo);
 
-                    if (!in_array($mime, $allowed_mimes) || !in_array($file_ext, $allowed_extensions)) {
-                        $error_message = 'Tipe file tidak diizinkan. Hanya file JPG/PNG yang diperbolehkan.';
-                    } elseif ($file['size'] > 2097152) { // 2MB
-                        $error_message = 'Ukuran file terlalu besar. Maksimal adalah 2MB.';
-                    } else {
-                        // Rename file secara unik
-                        $filename = uniqid() . '_' . time() . '.' . $file_ext;
-                        $upload_dir = __DIR__ . '/../../uploads/alat/';
+                            $allowed_mimes = ['image/jpeg', 'image/png', 'image/pjpeg', 'image/x-png'];
 
-                        // Buat folder jika belum ada
-                        if (!is_dir($upload_dir)) {
-                            mkdir($upload_dir, 0755, true);
-                        }
+                            if (!in_array($mime, $allowed_mimes) || !in_array($file_ext, $allowed_extensions)) {
+                                $error_message = 'Tipe file tidak diizinkan. Hanya file JPG/PNG yang diperbolehkan.';
+                            } elseif ($file['size'] > 2097152) { // 2MB
+                                $error_message = 'Ukuran file terlalu besar. Maksimal adalah 2MB.';
+                            } else {
+                                // Rename file secara unik
+                                $filename = uniqid() . '_' . time() . '.' . $file_ext;
+                                $upload_dir = __DIR__ . '/../../uploads/alat/';
 
-                        if (!move_uploaded_file($file['tmp_name'], $upload_dir . $filename)) {
-                            $error_message = 'Gagal menyimpan foto di server.';
-                            $filename = null;
+                                // Buat folder jika belum ada
+                                if (!is_dir($upload_dir) && !mkdir($upload_dir, 0755, true)) {
+                                    $error_message = 'Gagal membuat folder upload di server.';
+                                    $filename = null;
+                                } elseif (!is_writable($upload_dir)) {
+                                    $error_message = 'Folder upload tidak memiliki izin tulis.';
+                                    $filename = null;
+                                } elseif (!move_uploaded_file($file['tmp_name'], $upload_dir . $filename)) {
+                                    $error_message = 'Gagal menyimpan foto di server.';
+                                    $filename = null;
+                                }
+                            }
                         }
                     }
                 }
