@@ -33,3 +33,8 @@ jobs:
           
           # 2. Tarik kode terbaru dari GitHub
           git pull origin main
+          
+          # 3. Pastikan folder upload ada dan bisa ditulis oleh web server
+          mkdir -p uploads/alat
+          chmod -R 775 uploads
+          sudo chown -R apache:apache uploads
