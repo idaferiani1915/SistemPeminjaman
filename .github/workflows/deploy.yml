@@ -37,4 +37,8 @@ jobs:
           # 3. Pastikan folder upload ada dan bisa ditulis oleh web server
           mkdir -p uploads/alat
           chmod -R 775 uploads
-          sudo chown -R apache:apache uploads
+          if [ -n "${SUDO_PASSWORD:-}" ]; then
+            echo "$SUDO_PASSWORD" | sudo -S chown -R apache:apache uploads
+          else
+            echo "INFO: SUDO_PASSWORD tidak disetel. Lewati chown. Pastikan user deploy sudah memiliki akses yang benar ke uploads/."
+          fi
